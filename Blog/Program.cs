@@ -25,6 +25,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 
 }).AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
+});
 
 var app = builder.Build();
 

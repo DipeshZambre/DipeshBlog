@@ -1,0 +1,67 @@
+﻿using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Blog.Controllers
+{
+    public class AuthController : Controller
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+
+        // Register
+        // Login
+        // Logout
+
+        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            // Check for validation 
+            if(ModelState.IsValid)
+            {
+                // Create Identity User object
+                var user = new IdentityUser
+                {
+                    //Username is mandatory
+                    UserName = model.Email,
+                    Email = model.Email
+
+                };
+                // User Create
+             var result= await _userManager.CreateAsync(user, model.Password);
+
+            // if user create successfully
+            if (result.Succeeded)
+                {
+                    // If the User Role exist in database
+                   if(!await _roleManager.RoleExistsAsync("User"))
+                    {
+                      await _roleManager.CreateAsync(new IdentityRole("User"));
+                    }
+
+                    await _userManager.AddToRoleAsync(user, "User");
+                    await _signInManager.SignInAsync(user, true);
+
+                    return RedirectToAction("Index", "Post");
+                }
+
+            }
+            return View(model);
+        }
+    }
+}
