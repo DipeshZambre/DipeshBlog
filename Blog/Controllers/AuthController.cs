@@ -38,7 +38,7 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if(ModelState.IsValid)
             {
                 /*
                  ❌ Sync (Blocking)You stand at the door doing nothing until pizza arrives
@@ -101,6 +101,13 @@ namespace Blog.Controllers
 
             }
             return View(model);
+        }
+
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Post");
         }
     }
 }
