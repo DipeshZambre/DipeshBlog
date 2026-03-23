@@ -27,11 +27,41 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/AccessDenied";
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
 });
 
 var app = builder.Build();
+
+
+using(var scope = app.Services.CreateScope())
+{
+   var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+   var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string adminEmail = "admin@gmail.com";
+    string adminPassword = "admin";
+
+    var existingAdminRole = await _roleManager.FindByNameAsync("Admin");
+
+    if(existingAdminRole == null)
+    {
+        await _roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    var existingAdminUser = await _userManager.FindByEmailAsync(adminEmail);
+
+    if(existingAdminUser == null)
+    {
+        var adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail };
+       await _userManager.CreateAsync(adminUser, adminPassword);
+       await _userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+}
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

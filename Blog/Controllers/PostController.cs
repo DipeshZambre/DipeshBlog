@@ -1,6 +1,7 @@
 ﻿using Blog.Data;
 using Blog.Models;
 using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index(int? categotyId)
         { 
             var postQuery = _context.Posts.Include(p => p.Category).AsQueryable();
@@ -73,6 +75,7 @@ namespace Blog.Controllers
           } */
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             //ViewData["Category"] = new SelectList(_context.Categori
@@ -87,6 +90,7 @@ namespace Blog.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PostViewModel postViewModel)
         { 
             if(ModelState.IsValid)
@@ -123,6 +127,7 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             if(id == null)
@@ -150,6 +155,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(EditViewModel editViewModel)
         {
             if(!ModelState.IsValid)
@@ -193,7 +199,7 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var postFormDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
@@ -207,6 +213,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirm(int id)
         {
             var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
@@ -241,6 +248,8 @@ namespace Blog.Controllers
 
         //}
 
+
+        [Authorize]
         public JsonResult AddComment([FromBody] Comment comment)
         {
            
