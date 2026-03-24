@@ -39,7 +39,7 @@
                 
                 <div class="card-body">
                     <h5 class="card-title">@post.Title</h5>
-                    <p class="text-muted mb-2">Published on @post.PublishedDate.ToString("MM dd, yyyy")</p>
+                    <p class="text-muted mb-2">Published on @post.PublishedDate.ToString("dd/MM/yyyy")</p>
 
                     @{
                       var content =  RemoveHtmlTagHelper.RemoveHtmlTags(post.Content);
